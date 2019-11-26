@@ -1,18 +1,19 @@
-// POSTS:
+// *POSTS*:
 // - Obligatory fields are 'name', 'url', 'text'
 // GET: ---
-// POST: all required field are non-blank and text type
-// UPDATE: all required field are non-blank and text type; post exists
+// POST: all obligatory fields are non-blank and string type
+// UPDATE: all obligatory fields are non-blank and string type; post exists
 // DELETE: post exists
-
-
-// COMMENTS:
+// *COMMENTS*:
 // GET: post exists
-// POST: post exists; comment is non-blank and text type
-// UPDATE: post exists; comment exists; comment is non-blank and text type
+// POST: post exists; comment is non-blank and string type
+// UPDATE: post exists; comment exists; comment is non-blank and string type
 // DELETE: post exists; comment exists;
 
-let isText = (testObject, callback, options = {}) => {
+const path = require('path')
+const store = require(path.join(__dirname, 'store.js'))
+
+const isText = (testObject, callback, options = {}) => {
   if (Array.isArray(testObject)) {
     return testObject.every(e => isText(e, callback, options))
   }
@@ -26,8 +27,23 @@ let isText = (testObject, callback, options = {}) => {
   }
   return true
 }
-//check.postExists(postId)
-//check.commentExists(commentId,postId)
+
+const postExists = (postId, callback) => {
+  if (!store.posts[postId]) {
+    callback("The post does not exist.")
+    return false
+  }
+  return true
+}
+
+const commentExists = (commentId, postId, callback) => {
+  if (!store.posts[postId].comments[commentId]) {
+    callback("The comment does not exist.")
+    return false
+  }
+  return true
+}
+
 module.exports.isText = isText
-// module.exports.postExists = postExists
-// module.exports.commentExists = commentExists
+module.exports.postExists = postExists
+module.exports.commentExists = commentExists
